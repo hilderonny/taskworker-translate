@@ -21,19 +21,31 @@ The last command depends on the operating system, see https://pytorch.org/get-st
 
 Running the program the first time, ai models with about 5 GB must be downloaded
 
-## Comparison transformners vs. Argos Translate
+## Comparison transformers vs. Argos Translate
 
 Source text:
 
 ```
-The siege of Guînes took place from May to July 1352, when a French army under Geoffrey de Charny unsuccessfully attempted to recapture the French castle at Guînes which had been seized by the English the previous January. The siege was part of the Hundred Years' War and took place during the uneasy and oft-broken truce of Calais.  The English had taken the strongly fortified castle during a period of nominal truce, and the English king, Edward III, decided to keep it. Charny led 4,500 men and retook the town, but could not blockade the castle. After two months of fierce fighting, a large English night attack on the French camp inflicted a heavy defeat and the French withdrew. Guînes was incorporated into the Pale of Calais. The castle was besieged by the French in 1436 and 1514 but was relieved each time, before falling to the French in 1558.
+The siege of Guînes took place from May to July 1352, when a French army under Geoffrey de Charny unsuccessfully attempted to recapture the French castle at Guînes which had been seized by the English the previous January.
+
+The siege was part of the Hundred Years' War and took place during the uneasy and oft-broken truce of Calais.
+
+The English had taken the strongly fortified castle during a period of nominal truce, and the English king, Edward III, decided to keep it.
+
+Charny led 4,500 men and retook the town, but could not blockade the castle.
+
+After two months of fierce fighting, a large English night attack on the French camp inflicted a heavy defeat and the French withdrew.
+
+Guînes was incorporated into the Pale of Calais.
+
+The castle was besieged by the French in 1436 and 1514 but was relieved each time, before falling to the French in 1558.
 ```
 
 The text was split into sentences because the transformer model could not handle large texts. Argos split the text into paragraphs internally.
 
 Transformers took 11 seconds in sum, Argos Translate took 4 seconds.
 
-Transformers results were more exactly than the Argos ones. Transformers sometimes contains punctuation marks.
+Transformers results were more exactly than the Argos ones. Transformers sometimes contains punctuation marks. Argos needs Python 3.11 and additional CUDA downloads to work, transformers has all dependencies within itself and works with python 3.12
 
 Transformers result:
 
