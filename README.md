@@ -1,4 +1,4 @@
-# taskworker_translate
+# taskworker-translate
 Worker for taskbridge which can handle "translate" tasks
 
 See:
@@ -21,7 +21,48 @@ The last command depends on the operating system, see https://pytorch.org/get-st
 
 Running the program the first time, ai models with about 5 GB must be downloaded
 
-## Comparison transformers vs. Argos Translate
+## Task format
+
+ ```js
+ task = {
+    id: "36b8f84d-df4e-4d49-b662-bcde71a8764f",
+    ...
+    data: {
+        sourcelanguage: "en",
+        targetlanguage: "de",
+        texts: [
+            "Hello world!",
+            "Here I am."
+        ]
+    },
+    result: {
+        device: "cuda:0",
+        repository: "https://github.com/hilderonny/taskworker-translate",
+        version: "1.0.0",
+        library: "transformers",
+        model: "facebook/m2m100_1.2B",
+        texts: [
+            "Hallo Welt!",
+            "Hier bin ich."
+        ]
+    }
+ }
+ ```
+
+|Property|Description|
+|---|---|
+|`data.sourcelanguage`|Source language of the original text|
+|`data.targetlanguage`|Language in which the texts should be translated into|
+|`data.texts`|Array of texts to translate. Each element should be a separate sentence and should be no longer than **200** characters|
+|`result.device`|Device type which processed the translation. Can be `cuda:0` for GPU processing on the first NVidia graphic card or `cpu` for normal CPU processing|
+|`result.repository`|Repository URL of the worker which processed the task|
+|`result.version`|Version of the worker program used for processing|
+|`result.library`|NPM library used internally for AI processing|
+|`result.model`|AI model used for processing|
+|`result.texts`|List of translated texts. The list is of the same size as `data.texts` and the elements are in the same order so that there is a direct correlation between the input and output arrays|
+
+
+## Comparison of Transformers vs. Argos Translate
 
 Source text:
 
