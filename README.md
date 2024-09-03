@@ -32,10 +32,6 @@ python translate.py --apiurl http://127.0.0.1:8080/api/ --sourcelanguage en --ta
  ```js
  task = {
     id: "36b8f84d-df4e-4d49-b662-bcde71a8764f",
-    requirements: {
-        sourcelanguage: "en",
-        targetlanguage: "de"
-    },
     data: {
         texts: [
             "Hello world!",
@@ -59,8 +55,6 @@ python translate.py --apiurl http://127.0.0.1:8080/api/ --sourcelanguage en --ta
 
 |Property|Description|
 |---|---|
-|`data.sourcelanguage`|Source language of the original text|
-|`data.targetlanguage`|Language in which the texts should be translated into|
 |`data.texts`|Array of texts to translate. Each element should be a separate sentence and should be no longer than **200** characters|
 |`result.device`|Device type which processed the translation. Can be `cuda:0` for GPU processing on the first NVidia graphic card or `cpu` for normal CPU processing|
 |`result.repository`|Repository URL of the worker which processed the task|
