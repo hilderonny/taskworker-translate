@@ -19,17 +19,24 @@ pip install sentencepiece transformers torch torchvision torchaudio --index-url 
 
 The last command depends on the operating system, see https://pytorch.org/get-started/locally/ and can download several gigabytes.
 
+## Running
+
 Running the program the first time, ai models with about 5 GB must be downloaded
+
+```sh
+python translate.py --apiurl http://127.0.0.1:8080/api/ --sourcelanguage en --targetlanguage de
+```
 
 ## Task format
 
  ```js
  task = {
     id: "36b8f84d-df4e-4d49-b662-bcde71a8764f",
-    ...
-    data: {
+    requirements: {
         sourcelanguage: "en",
-        targetlanguage: "de",
+        targetlanguage: "de"
+    },
+    data: {
         texts: [
             "Hello world!",
             "Here I am."
@@ -37,8 +44,9 @@ Running the program the first time, ai models with about 5 GB must be downloaded
     },
     result: {
         device: "cuda:0",
+        duration: 12,
         repository: "https://github.com/hilderonny/taskworker-translate",
-        version: "1.0.0",
+        version: "1.1.0",
         library: "transformers",
         model: "facebook/m2m100_1.2B",
         texts: [
