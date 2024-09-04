@@ -1,81 +1,75 @@
+from importlib.metadata import version
+import time
+import json
+import requests
+import datetime
+import argparse
+import torch
+from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
+from langdetect import detect
+
 REPOSITORY = "https://github.com/hilderonny/taskworker-translate"
-VERSION = '1.1.0'
-LIBRARY = "transformers"
+VERSION = "1.2.0"
+LIBRARY = "transformers-" + version("transformers")
 MODEL = "facebook/m2m100_1.2B"
 DEVICE = "cuda:0"
 
 print(f'Translator Version {VERSION}')
 
-import time
-import os
-import json
-import requests
-import datetime
-
 # Parse command line arguments
-import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--apiurl', type=str, action='store', required=True, help='Root URL of the API of the task bridge to use, e.g. https://taskbridge.ai/api/')
 parser.add_argument('--version', '-v', action='version', version=VERSION)
-parser.add_argument('--sourcelanguage', action='store', required=True, help='The source language the worker should be able to process')
-parser.add_argument('--targetlanguage', action='store', required=True, help='The target language the worker should output')
 args = parser.parse_args()
 
-import os
 APIURL = args.apiurl
 if not APIURL.endswith("/"):
     APIURL = f"{APIURL}/"
 print(f'Using API URL {APIURL}')
-SOURCELANGUAGE = args.sourcelanguage
-print(f'Using source language {SOURCELANGUAGE}')
-TARGETLANGUAGE = args.targetlanguage
-print(f'Using target language {TARGETLANGUAGE}')
 
 # Load AI
-import torch
 if not torch.cuda.is_available():
     DEVICE = "cpu"
-from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 transformer_model = M2M100ForConditionalGeneration.from_pretrained(MODEL).to(DEVICE)
 tokenizer = M2M100Tokenizer.from_pretrained(MODEL)
-token_id = tokenizer.get_lang_id(TARGETLANGUAGE)
-from langdetect import detect
 
 def check_and_process():
     start_time = datetime.datetime.now()
     take_request = {}
     take_request["type"] = "translate"
-    take_request["abilities"] = {}
-    take_request["abilities"]["sourcelanguage"] = SOURCELANGUAGE
-    take_request["abilities"]["targetlanguage"] = TARGETLANGUAGE
     req = requests.post(f"{APIURL}tasks/take/", json=take_request)
     if req.status_code != 200:
         return False
     task = req.json()
     taskid = task["id"]
     print(json.dumps(task, indent=2))
-    textstotranslate = task["data"]["texts"]
+    target_language = task["data"]["targetlanguage"]
+    texts_to_translate = task["data"]["texts"]
     result_to_report = {}
     result_to_report["result"] = {}
     result_to_report["result"]["texts"] = []
+    token_id = tokenizer.get_lang_id(target_language)
 
-    for text in textstotranslate:
-        if len(text) < 1:
-            result_to_report["result"]["texts"].append("")
-            continue
-        detected_language = detect(text)[:2] # Only the first two digits
-        print(text, detected_language)
-        # When a language cannot be translated, return the original text
-        try:
-            tokenizer.src_lang = detected_language
-            encoded = tokenizer(text, return_tensors="pt").to(DEVICE)
-            generated_tokens = transformer_model.generate(**encoded, forced_bos_token_id=token_id)
-            result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
-            translated_text = "".join(result)
-            print(translated_text)
-            result_to_report["result"]["texts"].append(translated_text)
-        except:
-            result_to_report["result"]["texts"].append(text)
+    for text_to_translate in texts_to_translate:
+        result_element = {}
+        if len(text_to_translate) < 1:
+            result_element["text"] = ""
+        else:
+            detected_language = detect(text_to_translate)[:2] # Only the first two digits
+            result_element["language"] = detected_language
+            print(text_to_translate, detected_language)
+            # When a language cannot be translated, return the original text
+            try:
+                tokenizer.src_lang = detected_language
+                encoded = tokenizer(text_to_translate, return_tensors="pt").to(DEVICE)
+                generated_tokens = transformer_model.generate(**encoded, forced_bos_token_id=token_id)
+                result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
+                translated_text = "".join(result)
+                print(translated_text)
+                result_element["text"] = translated_text
+            except:
+                result_element["text"] = text_to_translate
+        result_to_report["result"]["texts"].append(result_element)
     end_time = datetime.datetime.now()
     result_to_report["result"]["device"] = DEVICE
     result_to_report["result"]["duration"] = (end_time - start_time).total_seconds()

@@ -1,16 +1,57 @@
 # taskworker-translate
-Worker for taskbridge which can handle "translate" tasks
 
-See:
+Worker for taskbridge which can handle tasks of type `translate`.
 
-1. https://huggingface.co/facebook/m2m100_1.2B
-2. https://github.com/ymoslem/DesktopTranslator?tab=readme-ov-file#m2m-100-multilingual-model
-3. https://github.com/argosopentech/argos-translate
+## Task format
 
+```json
+{
+    ...
+    "type" : "translate",
+    "data" : {
+        "targetlanguage" : "de",
+        "texts" : [
+            "Line 1",
+            "",
+            "Ligne 3"
+        ]
+    },
+    ...
+    "result" : {
+        "texts" : [
+            {
+                "text" : "Zeile 1",
+                "language" : "en"
+            },
+            {
+                "text" : ""
+            },
+            {
+                "text" : "Zeile 3",
+                "language" : "fr"
+            }
+        ],
+        "device" : "cuda:0",
+        "duration" : 12,
+        "repository" : "https://github.com/hilderonny/taskworker-translate",
+        "version" : "1.2.0",
+        "library" : "transformers-4.44.2",
+        "model" : "facebook/m2m100_1.2B"
+    }
+}
+```
 
-## Source code setup
+The `type` must be `translate`.
 
-First install Python 3.12.
+The worker expects a `data` object which consists of the `targetlanguage` in which all texts are to be translated into and an array of `texts` to be translated.
+The `targetlanguage` needs to be a two digit ISO code.
+The `texts` array should consist of sentences or short paragraphs. An element can also be empty.
+
+When the worker finishes the task, it sends back a `result` property. This property is an object. It contains an array `texts` which is of the same size as the `data.texts` property above. For each element in the data array there is an equivalent element in the results array. The arrays are ordered the same way. Each element is an object containing the translated `text` and the detected `language`of the text snippet expressed as zwo digits ISO code. Empty lines in the data array will be transferred into the result array without any language information.
+
+## Installation
+
+First install Python 3.12. The run the following commands in the folder of the downloaded repository.
 
 ```
 python -m venv python-venv
@@ -19,48 +60,19 @@ pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cu118
 pip install transformers==4.44.2 sentencepiece==0.2.0 langdetect==1.0.9
 ```
 
-The last commands depend on the operating system, see https://pytorch.org/get-started/locally/ and can download several gigabytes.
+The `pip` commands depend on the operating system, see https://pytorch.org/get-started/locally/ and can download several gigabytes.
 
 ## Running
 
-Running the program the first time, ai models with about 5 GB must be downloaded
+Running the program the first time, ai models with about 5 GB gets downloaded automatically.
 
 ```sh
-python translate.py --apiurl http://192.168.178.39:42000/api/ --sourcelanguage en --targetlanguage de
+python translate.py --apiurl http://192.168.178.39:42000/api/
 ```
 
-## Task format
+## Literature
 
- ```js
- task = {
-    id: "36b8f84d-df4e-4d49-b662-bcde71a8764f",
-    data: {
-        texts: [
-            "Hello world!",
-            "Here I am."
-        ]
-    },
-    result: {
-        device: "cuda:0",
-        duration: 12,
-        repository: "https://github.com/hilderonny/taskworker-translate",
-        version: "1.1.0",
-        library: "transformers",
-        model: "facebook/m2m100_1.2B",
-        texts: [
-            "Hallo Welt!",
-            "Hier bin ich."
-        ]
-    }
- }
- ```
+1. https://huggingface.co/facebook/m2m100_1.2B
+2. https://github.com/ymoslem/DesktopTranslator?tab=readme-ov-file#m2m-100-multilingual-model
+3. https://github.com/argosopentech/argos-translate
 
-|Property|Description|
-|---|---|
-|`data.texts`|Array of texts to translate. Each element should be a separate sentence and should be no longer than **200** characters|
-|`result.device`|Device type which processed the translation. Can be `cuda:0` for GPU processing on the first NVidia graphic card or `cpu` for normal CPU processing|
-|`result.repository`|Repository URL of the worker which processed the task|
-|`result.version`|Version of the worker program used for processing|
-|`result.library`|NPM library used internally for AI processing|
-|`result.model`|AI model used for processing|
-|`result.texts`|List of translated texts. The list is of the same size as `data.texts` and the elements are in the same order so that there is a direct correlation between the input and output arrays|
