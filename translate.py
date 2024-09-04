@@ -20,8 +20,11 @@ print(f'Translator Version {VERSION}')
 parser = argparse.ArgumentParser()
 parser.add_argument('--apiurl', type=str, action='store', required=True, help='Root URL of the API of the task bridge to use, e.g. https://taskbridge.ai/api/')
 parser.add_argument('--version', '-v', action='version', version=VERSION)
+parser.add_argument('--worker', type=str, action='store', required=True, help='Unique name of this worker')
 args = parser.parse_args()
 
+WORKER = args.worker
+print(f'Worker name: {WORKER}')
 APIURL = args.apiurl
 if not APIURL.endswith("/"):
     APIURL = f"{APIURL}/"
@@ -37,6 +40,7 @@ def check_and_process():
     start_time = datetime.datetime.now()
     take_request = {}
     take_request["type"] = "translate"
+    take_request["worker"] = WORKER
     req = requests.post(f"{APIURL}tasks/take/", json=take_request)
     if req.status_code != 200:
         return False

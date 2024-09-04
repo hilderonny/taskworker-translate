@@ -8,6 +8,7 @@ Worker for taskbridge which can handle tasks of type `translate`.
 {
     ...
     "type" : "translate",
+    "worker" : "ROG",
     "data" : {
         "targetlanguage" : "de",
         "texts" : [
@@ -43,6 +44,8 @@ Worker for taskbridge which can handle tasks of type `translate`.
 
 The `type` must be `translate`.
 
+`worker` contains the unique name of the worker.
+
 The worker expects a `data` object which consists of the `targetlanguage` in which all texts are to be translated into and an array of `texts` to be translated.
 The `targetlanguage` needs to be a two digit ISO code.
 The `texts` array should consist of sentences or short paragraphs. An element can also be empty.
@@ -67,7 +70,7 @@ The `pip` commands depend on the operating system, see https://pytorch.org/get-s
 Running the program the first time, ai models with about 5 GB gets downloaded automatically.
 
 ```sh
-python translate.py --apiurl http://192.168.178.39:42000/api/
+python translate.py --apiurl http://192.168.178.39:42000/api/ --worker ROG
 ```
 
 ## Literature
