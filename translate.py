@@ -38,8 +38,8 @@ if not torch.cuda.is_available():
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 transformer_model = M2M100ForConditionalGeneration.from_pretrained(MODEL).to(DEVICE)
 tokenizer = M2M100Tokenizer.from_pretrained(MODEL)
-tokenizer.src_lang = SOURCELANGUAGE
 token_id = tokenizer.get_lang_id(TARGETLANGUAGE)
+from langdetect import detect
 
 def check_and_process():
     start_time = datetime.datetime.now()
@@ -63,10 +63,19 @@ def check_and_process():
         if len(text) < 1:
             result_to_report["result"]["texts"].append("")
             continue
-        encoded = tokenizer(text, return_tensors="pt").to(DEVICE)
-        generated_tokens = transformer_model.generate(**encoded, forced_bos_token_id=token_id)
-        result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
-        result_to_report["result"]["texts"].append("".join(result))
+        detected_language = detect(text)[:2] # Only the first two digits
+        print(text, detected_language)
+        # When a language cannot be translated, return the original text
+        try:
+            tokenizer.src_lang = detected_language
+            encoded = tokenizer(text, return_tensors="pt").to(DEVICE)
+            generated_tokens = transformer_model.generate(**encoded, forced_bos_token_id=token_id)
+            result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
+            translated_text = "".join(result)
+            print(translated_text)
+            result_to_report["result"]["texts"].append(translated_text)
+        except:
+            result_to_report["result"]["texts"].append(text)
     end_time = datetime.datetime.now()
     result_to_report["result"]["device"] = DEVICE
     result_to_report["result"]["duration"] = (end_time - start_time).total_seconds()
