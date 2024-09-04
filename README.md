@@ -10,21 +10,23 @@ See:
 
 ## Source code setup
 
+First install Python 3.12.
+
 ```
 python -m venv python-venv
 python-venv/Scripts/activate
-pip install -r requirements.txt
-pip install sentencepiece transformers torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cu118
+pip install transformers==4.44.2 sentencepiece==0.2.0
 ```
 
-The last command depends on the operating system, see https://pytorch.org/get-started/locally/ and can download several gigabytes.
+The last commands depend on the operating system, see https://pytorch.org/get-started/locally/ and can download several gigabytes.
 
 ## Running
 
 Running the program the first time, ai models with about 5 GB must be downloaded
 
 ```sh
-python translate.py --apiurl http://127.0.0.1:8080/api/ --sourcelanguage en --targetlanguage de
+python translate.py --apiurl http://192.168.178.39:42000/api/ --sourcelanguage en --targetlanguage de
 ```
 
 ## Task format

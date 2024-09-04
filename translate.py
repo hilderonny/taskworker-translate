@@ -60,6 +60,9 @@ def check_and_process():
     result_to_report["result"]["texts"] = []
 
     for text in textstotranslate:
+        if len(text) < 1:
+            result_to_report["result"]["texts"].append("")
+            continue
         encoded = tokenizer(text, return_tensors="pt").to(DEVICE)
         generated_tokens = transformer_model.generate(**encoded, forced_bos_token_id=token_id)
         result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
@@ -72,8 +75,9 @@ def check_and_process():
     result_to_report["result"]["library"] = LIBRARY
     result_to_report["result"]["model"] = MODEL
     print(json.dumps(result_to_report, indent=2))
-    print('Reporting result')
+    print("Reporting result")
     requests.post(f"{APIURL}tasks/complete/{taskid}/", json=result_to_report)
+    print("Done")
     return True
 
 try:
