@@ -37,7 +37,8 @@ Worker for taskbridge which can handle tasks of type `translate`.
         "repository" : "https://github.com/hilderonny/taskworker-translate",
         "version" : "1.2.0",
         "library" : "transformers-4.44.2",
-        "model" : "facebook/m2m100_1.2B"
+        "model" : "facebook/m2m100_1.2B",
+        "apiversion" : "v1"
     }
 }
 ```
@@ -50,7 +51,7 @@ The worker expects a `data` object which consists of the `targetlanguage` in whi
 The `targetlanguage` needs to be a two digit ISO code.
 The `texts` array should consist of sentences or short paragraphs. An element can also be empty.
 
-When the worker finishes the task, it sends back a `result` property. This property is an object. It contains an array `texts` which is of the same size as the `data.texts` property above. For each element in the data array there is an equivalent element in the results array. The arrays are ordered the same way. Each element is an object containing the translated `text` and the detected `language`of the text snippet expressed as zwo digits ISO code. Empty lines in the data array will be transferred into the result array without any language information.
+When the worker finishes the task, it sends back a `result` property. This property is an object. It contains an array `texts` which is of the same size as the `data.texts` property above. For each element in the data array there is an equivalent element in the results array. The arrays are ordered the same way. Each element is an object containing the translated `text` and the detected `language`of the text snippet expressed as zwo digits ISO code. Empty lines in the data array will be transferred into the result array without any language information. In `apiversion` there is the used version of the Task Bridge API.
 
 ## Installation
 
@@ -70,7 +71,7 @@ The `pip` commands depend on the operating system, see https://pytorch.org/get-s
 Running the program the first time, ai models with about 5 GB gets downloaded automatically.
 
 ```sh
-python translate.py --apiurl http://192.168.178.39:42000/api/ --worker ROG
+python translate.py --taskbridgeurl http://192.168.178.39:42000/ --worker ROG
 ```
 
 ## Literature

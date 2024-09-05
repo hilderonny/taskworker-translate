@@ -13,21 +13,23 @@ VERSION = "1.2.0"
 LIBRARY = "transformers-" + version("transformers")
 MODEL = "facebook/m2m100_1.2B"
 DEVICE = "cuda:0"
+APIVERSION = "v1"
 
 print(f'Translator Version {VERSION}')
 
 # Parse command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--apiurl', type=str, action='store', required=True, help='Root URL of the API of the task bridge to use, e.g. https://taskbridge.ai/api/')
+parser.add_argument('--taskbridgeurl', type=str, action='store', required=True, help='Root URL of the API of the task bridge to use, e.g. https://taskbridge.ai/')
 parser.add_argument('--version', '-v', action='version', version=VERSION)
 parser.add_argument('--worker', type=str, action='store', required=True, help='Unique name of this worker')
 args = parser.parse_args()
 
 WORKER = args.worker
 print(f'Worker name: {WORKER}')
-APIURL = args.apiurl
-if not APIURL.endswith("/"):
-    APIURL = f"{APIURL}/"
+TASKBRIDGEURL = args.taskbridgeurl
+if not TASKBRIDGEURL.endswith("/"):
+    TASKBRIDGEURL = f"{TASKBRIDGEURL}/"
+APIURL = f"{TASKBRIDGEURL}/api/{APIVERSION}/"
 print(f'Using API URL {APIURL}')
 
 # Load AI
@@ -81,6 +83,7 @@ def check_and_process():
     result_to_report["result"]["version"] = VERSION
     result_to_report["result"]["library"] = LIBRARY
     result_to_report["result"]["model"] = MODEL
+    result_to_report["result"]["apiversion"] = APIVERSION
     print(json.dumps(result_to_report, indent=2))
     print("Reporting result")
     requests.post(f"{APIURL}tasks/complete/{taskid}/", json=result_to_report)
