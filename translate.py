@@ -66,11 +66,11 @@ def check_and_process():
         if len(text_to_translate) < 1:
             result_element["text"] = ""
         else:
-            detected_language = detect(text_to_translate)[:2] # Only the first two digits
-            result_element["language"] = detected_language
-            print(text_to_translate, detected_language)
-            # When a language cannot be translated, return the original text
             try:
+                # When a language cannot be translated, return the original text
+                detected_language = detect(text_to_translate)[:2] # Only the first two digits
+                result_element["language"] = detected_language
+                print(text_to_translate, detected_language)
                 tokenizer.src_lang = detected_language
                 encoded = tokenizer(text_to_translate, return_tensors="pt").to(DEVICE)
                 generated_tokens = transformer_model.generate(**encoded, forced_bos_token_id=token_id)
