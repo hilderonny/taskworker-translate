@@ -5,6 +5,7 @@ import requests
 import datetime
 import argparse
 import torch
+import os
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 from langdetect import detect
 
@@ -14,6 +15,7 @@ LIBRARY = "transformers-" + version("transformers")
 MODEL = "facebook/m2m100_1.2B"
 DEVICE = "cuda:0"
 APIVERSION = "v1"
+LOCAL_MODEL_PATH = "./models/facebook/m2m100_1.2B"
 
 print(f'Translator Version {VERSION}')
 
@@ -29,13 +31,16 @@ print(f'Worker name: {WORKER}')
 TASKBRIDGEURL = args.taskbridgeurl
 if not TASKBRIDGEURL.endswith("/"):
     TASKBRIDGEURL = f"{TASKBRIDGEURL}/"
-APIURL = f"{TASKBRIDGEURL}/api/{APIVERSION}/"
+APIURL = f"{TASKBRIDGEURL}api/{APIVERSION}/"
 print(f'Using API URL {APIURL}')
 
 # Load AI
 if not torch.cuda.is_available():
     DEVICE = "cpu"
-transformer_model = M2M100ForConditionalGeneration.from_pretrained(MODEL).to(DEVICE)
+# Save online model locally. Only needed once.
+if not os.path.exists(LOCAL_MODEL_PATH):
+    M2M100ForConditionalGeneration.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
+transformer_model = M2M100ForConditionalGeneration.from_pretrained(LOCAL_MODEL_PATH).to(DEVICE)
 tokenizer = M2M100Tokenizer.from_pretrained(MODEL)
 
 def check_and_process():
