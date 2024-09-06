@@ -10,6 +10,7 @@ Worker for taskbridge which can handle tasks of type `translate`.
     "type" : "translate",
     "worker" : "ROG",
     "data" : {
+        "sourcelanguage" : "en",
         "targetlanguage" : "de",
         "texts" : [
             "Line 1",
@@ -48,6 +49,7 @@ The `type` must be `translate`.
 `worker` contains the unique name of the worker.
 
 The worker expects a `data` object which consists of the `targetlanguage` in which all texts are to be translated into and an array of `texts` to be translated.
+The `sourcelanguage` is optional and forces the worker to translate from this language without detecting it. When this property is missing, for each line the language gets detected.
 The `targetlanguage` needs to be a two digit ISO code.
 The `texts` array should consist of sentences or short paragraphs. An element can also be empty.
 

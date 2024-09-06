@@ -54,6 +54,9 @@ def check_and_process():
     task = req.json()
     taskid = task["id"]
     print(json.dumps(task, indent=2))
+    source_language = None
+    if "sourcelanguage" in task["data"]:
+        source_language = task["data"]["sourcelanguage"]
     target_language = task["data"]["targetlanguage"]
     texts_to_translate = task["data"]["texts"]
     result_to_report = {}
@@ -68,7 +71,10 @@ def check_and_process():
         else:
             try:
                 # When a language cannot be translated, return the original text
-                detected_language = detect(text_to_translate)[:2] # Only the first two digits
+                if source_language is None:
+                    detected_language = detect(text_to_translate)[:2] # Only the first two digits
+                else:
+                    detected_language = source_language
                 result_element["language"] = detected_language
                 print(text_to_translate, detected_language)
                 tokenizer.src_lang = detected_language
