@@ -14,7 +14,7 @@ VERSION = "1.2.0"
 LIBRARY = "transformers-" + version("transformers")
 MODEL = "facebook/m2m100_1.2B"
 DEVICE = "cuda:0"
-APIVERSION = "v1"
+APIVERSION = "v2"
 LOCAL_MODEL_PATH = "./models/facebook/m2m100_1.2B"
 
 print(f'Translator Version {VERSION}')
