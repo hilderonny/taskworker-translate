@@ -96,7 +96,6 @@ sudo systemctl enable taskworker-translate.service
 sudo systemctl start taskworker-translate.service
 ```
 
-
 ## Running
 
 Running the program the first time, ai models with about 5 GB gets downloaded automatically.

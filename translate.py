@@ -42,8 +42,9 @@ print(f'Using device {DEVICE}')
 # Save online model locally. Only needed once.
 if not os.path.exists(LOCAL_MODEL_PATH):
     M2M100ForConditionalGeneration.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
+    M2M100Tokenizer.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
 transformer_model = M2M100ForConditionalGeneration.from_pretrained(LOCAL_MODEL_PATH).to(DEVICE)
-tokenizer = M2M100Tokenizer.from_pretrained(MODEL)
+tokenizer = M2M100Tokenizer.from_pretrained(LOCAL_MODEL_PATH)
 
 def check_and_process():
     start_time = datetime.datetime.now()
