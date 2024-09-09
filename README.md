@@ -69,6 +69,34 @@ pip install transformers==4.44.2 sentencepiece==0.2.0 langdetect==1.0.9
 
 The `pip` commands depend on the operating system, see https://pytorch.org/get-started/locally/ and can download several gigabytes.
 
+Adopt the shell script `translate.sh`to your needs and create SystemD config files (if you want tu run the worker as Linux service).
+
+**/etc/systemd/system/taskworker-translate.service**:
+
+```
+[Unit]
+Description=Forensic Task Worker - Text Translator
+
+[Service]
+ExecStart=/taskworker-translate/translate.sh
+Restart=always
+User=user
+WorkingDirectory=/taskworker-translate/
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Finally register and start the services.
+
+```
+chmod +x ./translate.sh
+sudo systemctl daemon-reload
+sudo systemctl enable taskworker-translate.service
+sudo systemctl start taskworker-translate.service
+```
+
+
 ## Running
 
 Running the program the first time, ai models with about 5 GB gets downloaded automatically.
