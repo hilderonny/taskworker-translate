@@ -23,14 +23,14 @@ Worker for taskbridge which can handle tasks of type `translate`.
         "texts" : [
             {
                 "text" : "Zeile 1",
-                "language" : "en"
+                "sourcelanguage" : "en"
             },
             {
                 "text" : ""
             },
             {
                 "text" : "Zeile 3",
-                "language" : "fr"
+                "sourcelanguage" : "fr"
             }
         ],
         "device" : "cuda:0",
@@ -53,7 +53,7 @@ The `sourcelanguage` is optional and forces the worker to translate from this la
 The `targetlanguage` needs to be a two digit ISO code.
 The `texts` array should consist of sentences or short paragraphs. An element can also be empty.
 
-When the worker finishes the task, it sends back a `result` property. This property is an object. It contains an array `texts` which is of the same size as the `data.texts` property above. For each element in the data array there is an equivalent element in the results array. The arrays are ordered the same way. Each element is an object containing the translated `text` and the detected `language`of the text snippet expressed as zwo digits ISO code. Empty lines in the data array will be transferred into the result array without any language information. In `apiversion` there is the used version of the Task Bridge API.
+When the worker finishes the task, it sends back a `result` property. This property is an object. It contains an array `texts` which is of the same size as the `data.texts` property above. For each element in the data array there is an equivalent element in the results array. The arrays are ordered the same way. Each element is an object containing the translated `text` and the detected `sourcelanguage`of the text snippet expressed as zwo digits ISO code. Empty lines in the data array will be transferred into the result array without any language information. In `apiversion` there is the used version of the Task Bridge API.
 
 ## Installation
 

@@ -75,7 +75,7 @@ def check_and_process():
                     detected_language = detect(text_to_translate)[:2] # Only the first two digits
                 else:
                     detected_language = source_language
-                result_element["language"] = detected_language
+                result_element["sourcelanguage"] = detected_language
                 print(text_to_translate, detected_language)
                 tokenizer.src_lang = detected_language
                 encoded = tokenizer(text_to_translate, return_tensors="pt").to(DEVICE)
