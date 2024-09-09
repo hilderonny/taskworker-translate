@@ -59,9 +59,10 @@ When the worker finishes the task, it sends back a `result` property. This prope
 
 First install Python 3.12. The run the following commands in the folder of the downloaded repository.
 
-```
-python -m venv python-venv
-python-venv/Scripts/activate
+```sh
+python3.12 -m venv python-venv
+python-venv\Scripts\activate # Windows
+source ./python-venv/bin/activate # Linux
 pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cu118
 pip install transformers==4.44.2 sentencepiece==0.2.0 langdetect==1.0.9
 ```
@@ -73,8 +74,10 @@ The `pip` commands depend on the operating system, see https://pytorch.org/get-s
 Running the program the first time, ai models with about 5 GB gets downloaded automatically.
 
 ```sh
-python translate.py --taskbridgeurl http://192.168.178.39:42000/ --worker ROG
+python translate.py --taskbridgeurl http://192.168.178.39:42000/ --worker ROG --device cuda:0
 ```
+
+The `device` defines which device to use for processing. Can be `cpu`, `cuda` or `cuda:X` where `X` is the index of the graphics card to use.
 
 ## Literature
 

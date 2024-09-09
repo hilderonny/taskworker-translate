@@ -13,7 +13,6 @@ REPOSITORY = "https://github.com/hilderonny/taskworker-translate"
 VERSION = "1.2.0"
 LIBRARY = "transformers-" + version("transformers")
 MODEL = "facebook/m2m100_1.2B"
-DEVICE = "cuda:0"
 APIVERSION = "v2"
 LOCAL_MODEL_PATH = "./models/facebook/m2m100_1.2B"
 
@@ -22,6 +21,7 @@ print(f'Translator Version {VERSION}')
 # Parse command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--taskbridgeurl', type=str, action='store', required=True, help='Root URL of the API of the task bridge to use, e.g. https://taskbridge.ai/')
+parser.add_argument('--device', type=str, action='store', required=True, help='Device to use for processing. Can be "cpu", "cuda" or "cuda:0"')
 parser.add_argument('--version', '-v', action='version', version=VERSION)
 parser.add_argument('--worker', type=str, action='store', required=True, help='Unique name of this worker')
 args = parser.parse_args()
@@ -34,9 +34,11 @@ if not TASKBRIDGEURL.endswith("/"):
 APIURL = f"{TASKBRIDGEURL}api/{APIVERSION}/"
 print(f'Using API URL {APIURL}')
 
-# Load AI
+DEVICE = args.device
 if not torch.cuda.is_available():
     DEVICE = "cpu"
+print(f'Using device {DEVICE}')
+
 # Save online model locally. Only needed once.
 if not os.path.exists(LOCAL_MODEL_PATH):
     M2M100ForConditionalGeneration.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
