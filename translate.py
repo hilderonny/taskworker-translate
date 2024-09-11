@@ -10,10 +10,9 @@ from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 from langdetect import detect
 
 REPOSITORY = "https://github.com/hilderonny/taskworker-translate"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 LIBRARY = "transformers-" + version("transformers")
 MODEL = "facebook/m2m100_1.2B"
-APIVERSION = "v2"
 LOCAL_MODEL_PATH = "./models/facebook/m2m100_1.2B"
 
 print(f'Translator Version {VERSION}')
@@ -31,7 +30,7 @@ print(f'Worker name: {WORKER}')
 TASKBRIDGEURL = args.taskbridgeurl
 if not TASKBRIDGEURL.endswith("/"):
     TASKBRIDGEURL = f"{TASKBRIDGEURL}/"
-APIURL = f"{TASKBRIDGEURL}api/{APIVERSION}/"
+APIURL = f"{TASKBRIDGEURL}api/"
 print(f'Using API URL {APIURL}')
 
 DEVICE = args.device
@@ -56,7 +55,7 @@ def check_and_process():
         return False
     task = req.json()
     taskid = task["id"]
-    print(json.dumps(task, indent=2))
+    #print(json.dumps(task, indent=2))
     source_language = None
     if "sourcelanguage" in task["data"]:
         source_language = task["data"]["sourcelanguage"]
@@ -79,13 +78,13 @@ def check_and_process():
                 else:
                     detected_language = source_language
                 result_element["sourcelanguage"] = detected_language
-                print(text_to_translate, detected_language)
+                #print(text_to_translate, detected_language)
                 tokenizer.src_lang = detected_language
                 encoded = tokenizer(text_to_translate, return_tensors="pt").to(DEVICE)
                 generated_tokens = transformer_model.generate(**encoded, forced_bos_token_id=token_id)
                 result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
                 translated_text = "".join(result)
-                print(translated_text)
+                #print(translated_text)
                 result_element["text"] = translated_text
             except:
                 result_element["text"] = text_to_translate
@@ -97,11 +96,10 @@ def check_and_process():
     result_to_report["result"]["version"] = VERSION
     result_to_report["result"]["library"] = LIBRARY
     result_to_report["result"]["model"] = MODEL
-    result_to_report["result"]["apiversion"] = APIVERSION
-    print(json.dumps(result_to_report, indent=2))
-    print("Reporting result")
+    #print(json.dumps(result_to_report, indent=2))
+    #print("Reporting result")
     requests.post(f"{APIURL}tasks/complete/{taskid}/", json=result_to_report)
-    print("Done")
+    #print("Done")
     return True
 
 try:

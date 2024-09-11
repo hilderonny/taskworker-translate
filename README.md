@@ -36,10 +36,9 @@ Worker for taskbridge which can handle tasks of type `translate`.
         "device" : "cuda:0",
         "duration" : 12,
         "repository" : "https://github.com/hilderonny/taskworker-translate",
-        "version" : "1.2.0",
+        "version" : "1.3.0",
         "library" : "transformers-4.44.2",
-        "model" : "facebook/m2m100_1.2B",
-        "apiversion" : "v1"
+        "model" : "facebook/m2m100_1.2B"
     }
 }
 ```
