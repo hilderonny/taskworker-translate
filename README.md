@@ -68,7 +68,7 @@ pip install transformers==4.44.2 sentencepiece==0.2.0 langdetect==1.0.9
 
 The `pip` commands depend on the operating system, see https://pytorch.org/get-started/locally/ and can download several gigabytes.
 
-Adopt the shell script `translate.sh`to your needs and create SystemD config files (if you want tu run the worker as Linux service).
+Adopt the shell script `translate.sh` to your needs and create SystemD config files (if you want tu run the worker as Linux service).
 
 **/etc/systemd/system/taskworker-translate.service**:
 
