@@ -45,6 +45,12 @@ if not os.path.exists(LOCAL_MODEL_PATH):
 transformer_model = M2M100ForConditionalGeneration.from_pretrained(LOCAL_MODEL_PATH).to(DEVICE)
 tokenizer = M2M100Tokenizer.from_pretrained(LOCAL_MODEL_PATH)
 
+def report_progress(taskid, progress):
+    body = {
+        "progress": str(progress)
+    }
+    requests.post(f"{APIURL}tasks/progress/{taskid}/", json=body)
+
 def check_and_process():
     start_time = datetime.datetime.now()
     take_request = {}
@@ -65,6 +71,8 @@ def check_and_process():
     result_to_report["result"] = {}
     result_to_report["result"]["texts"] = []
     token_id = tokenizer.get_lang_id(target_language)
+    number_of_texts = len(texts_to_translate)
+    text_index = 0
 
     for text_to_translate in texts_to_translate:
         result_element = {}
@@ -89,6 +97,11 @@ def check_and_process():
             except:
                 result_element["text"] = text_to_translate
         result_to_report["result"]["texts"].append(result_element)
+        progress = round(text_index * 100 / number_of_texts)
+        #print(f"{progress}% : {translated_text}")
+        report_progress(taskid, progress)
+        text_index = text_index + 1
+
     end_time = datetime.datetime.now()
     result_to_report["result"]["device"] = DEVICE
     result_to_report["result"]["duration"] = (end_time - start_time).total_seconds()
