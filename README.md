@@ -2,57 +2,48 @@
 
 Worker for taskbridge which can handle tasks of type `translate`.
 
-## Task format
+## Result format
+
+When calling the TaskBridge `/api/tasks/complete/:id` API, the following JSON structure is sent to the endpoint.
 
 ```json
 {
-    ...
-    "type" : "translate",
-    "worker" : "ROG",
-    "data" : {
+  "result" : {
+    "texts" : [
+      {
         "sourcelanguage" : "en",
-        "targetlanguage" : "de",
-        "texts" : [
-            "Line 1",
-            "",
-            "Ligne 3"
-        ]
-    },
-    ...
-    "result" : {
-        "texts" : [
-            {
-                "text" : "Zeile 1",
-                "sourcelanguage" : "en"
-            },
-            {
-                "text" : ""
-            },
-            {
-                "text" : "Zeile 3",
-                "sourcelanguage" : "fr"
-            }
-        ],
-        "device" : "cuda:0",
-        "duration" : 12,
-        "repository" : "https://github.com/hilderonny/taskworker-translate",
-        "version" : "1.3.0",
-        "library" : "transformers-4.44.2",
-        "model" : "facebook/m2m100_1.2B"
-    }
+        "text" : "Text der ersten Zeile auf Englisch"
+      },
+      {
+        "sourcelanguage" : "ru",
+        "text" : "Text der zweiten Zeile auf Russisch"
+      },
+      {
+        "sourcelanguage" : "ar",
+        "text" : "Text der dritten Zeile auf Arabisch"
+      }
+    ],
+    "device" : "cuda",
+    "duration" : 1.6,
+    "repository" : "https://github.com/hilderonny/taskworker-translate",
+    "version" : "1.3.0",
+    "library": "transformers-4.44.2",
+    "model": "facebook/m2m100_1.2B"
+  }
 }
 ```
 
-The `type` must be `translate`.
-
-`worker` contains the unique name of the worker.
-
-The worker expects a `data` object which consists of the `targetlanguage` in which all texts are to be translated into and an array of `texts` to be translated.
-The `sourcelanguage` is optional and forces the worker to translate from this language without detecting it. When this property is missing, for each line the language gets detected.
-The `targetlanguage` needs to be a two digit ISO code.
-The `texts` array should consist of sentences or short paragraphs. An element can also be empty.
-
-When the worker finishes the task, it sends back a `result` property. This property is an object. It contains an array `texts` which is of the same size as the `data.texts` property above. For each element in the data array there is an equivalent element in the results array. The arrays are ordered the same way. Each element is an object containing the translated `text` and the detected `sourcelanguage`of the text snippet expressed as zwo digits ISO code. Empty lines in the data array will be transferred into the result array without any language information. In `apiversion` there is the used version of the Task Bridge API.
+|Property|Description|
+|---|---|
+|`texts`|Array of translated texts. Same size as request array|
+|`texts.sourcelanguage`|Detected language of the source text as 2 digit ISO code. Only set, when source language was not forced via request|
+|`texts.text`|Text translated into target language|
+|`device`|`cuda` for GPU processing and `cpu` for CPU processing|
+|`duration`|Time in seconds for the processing|
+|`repository`|Source code repository of the worker|
+|`version`|Version of the worker|
+|`library`|Library used to perform translation|
+|`model`|AI model used for translation|
 
 ## Installation
 
