@@ -1,6 +1,5 @@
 from importlib.metadata import version
 import time
-import json
 import requests
 import datetime
 import argparse
@@ -40,6 +39,7 @@ print(f'Using device {DEVICE}')
 
 # Save online model locally. Only needed once.
 if not os.path.exists(LOCAL_MODEL_PATH):
+    print('Downloading model, please wait ...')
     M2M100ForConditionalGeneration.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
     M2M100Tokenizer.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
 transformer_model = M2M100ForConditionalGeneration.from_pretrained(LOCAL_MODEL_PATH).to(DEVICE)
@@ -61,6 +61,7 @@ def check_and_process():
         return False
     task = req.json()
     taskid = task["id"]
+    print(f'Got new task {taskid}')
     #print(json.dumps(task, indent=2))
     source_language = None
     if "sourcelanguage" in task["data"]:
@@ -110,7 +111,7 @@ def check_and_process():
     result_to_report["result"]["library"] = LIBRARY
     result_to_report["result"]["model"] = MODEL
     #print(json.dumps(result_to_report, indent=2))
-    #print("Reporting result")
+    print("Reporting result")
     requests.post(f"{APIURL}tasks/complete/{taskid}/", json=result_to_report)
     #print("Done")
     return True

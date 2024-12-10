@@ -96,6 +96,20 @@ python translate.py --taskbridgeurl http://192.168.178.39:42000/ --worker ROG --
 
 The `device` defines which device to use for processing. Can be `cpu`, `cuda` or `cuda:X` where `X` is the index of the graphics card to use.
 
+## Docker
+
+There is also a [Docker image](https://hub.docker.com/repository/docker/hilderonny2024/taskworker-translate) you can use. It is tested with Docker Desktop on Windows using WSL2.
+
+```sh
+docker run --gpus all -e taskbridgeurl=http://192.168.178.39:42000/ -e worker=ROG hilderonny2024/taskworker-translate
+```
+
+The first time you run the application the AI model needs to be downloaded (about 5 GB), which can take some time. You can watch the progress by opening a terminal in the docker container and running
+
+```sh
+ls -la /root/.cache/huggingface/hub/models--facebook--m2m100_1.2B/blobs/
+```
+
 ## Literature
 
 1. https://huggingface.co/facebook/m2m100_1.2B
