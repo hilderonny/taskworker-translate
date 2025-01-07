@@ -9,10 +9,9 @@ from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 from langdetect import detect
 
 REPOSITORY = "https://github.com/hilderonny/taskworker-translate"
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 LIBRARY = "transformers-" + version("transformers")
 MODEL = "facebook/m2m100_1.2B"
-LOCAL_MODEL_PATH = "./models/facebook/m2m100_1.2B"
 
 print(f'Translator Version {VERSION}')
 
@@ -38,12 +37,8 @@ if not torch.cuda.is_available():
 print(f'Using device {DEVICE}')
 
 # Save online model locally. Only needed once.
-if not os.path.exists(LOCAL_MODEL_PATH):
-    print('Downloading model, please wait ...')
-    M2M100ForConditionalGeneration.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
-    M2M100Tokenizer.from_pretrained(MODEL).save_pretrained(LOCAL_MODEL_PATH)
-transformer_model = M2M100ForConditionalGeneration.from_pretrained(LOCAL_MODEL_PATH).to(DEVICE)
-tokenizer = M2M100Tokenizer.from_pretrained(LOCAL_MODEL_PATH)
+transformer_model = M2M100ForConditionalGeneration.from_pretrained(MODEL).to(DEVICE)
+tokenizer = M2M100Tokenizer.from_pretrained(MODEL)
 
 def report_progress(taskid, progress):
     body = {
