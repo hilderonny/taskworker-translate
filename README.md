@@ -1,6 +1,6 @@
 # taskworker-translate
 
-Worker for taskbridge which can handle tasks of type `translate`.
+Worker for [taskbridge](https://github.com/hilderonny/taskbridge) which can handle tasks of type `translate`.
 
 ## Result format
 
